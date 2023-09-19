@@ -6,7 +6,7 @@ const Route=express.Router();
 const productModel=require('../models/product.model');
 
 /*Get all Products */
-Route.get('products', async (req,res)=>{
+Route.get('/products', async (req,res)=>{
        const Products= await productModel.find({}).populate('category');
        if(!Products){
          return  res.status(400).json({success:false,message:'Products Not Found...!'});     
@@ -16,7 +16,7 @@ Route.get('products', async (req,res)=>{
 
 
 /*Get particular  Product Depends On ID */
-Route.get('product/:id', async (req,res)=>{
+Route.get('/product/:id', async (req,res)=>{
        const Products= await productModel.findOne({'_id':req.params.id}).populate('category');
        if(!Products){
          return  res.status(400).json({success:false,message:'Product Not Found...!'});     
@@ -26,7 +26,7 @@ Route.get('product/:id', async (req,res)=>{
 
 
 /*Add new Products*/
-Route.post('product/',async (req,res)=>{
+Route.post('/product/',async (req,res)=>{
        const newProduct=new productModel({
               name:req.body.name,
               description:req.body.description,
@@ -44,7 +44,7 @@ Route.post('product/',async (req,res)=>{
 
 
 /*Delete particular  Products Depends On ID */
-Route.delete('product/:id', (req, res) => {
+Route.delete('/product/:id', (req, res) => {
        productModel.findOneAndDelete({ '_id': req.params.id })
               .then(info => {
                      if (info) {
@@ -60,7 +60,7 @@ Route.delete('product/:id', (req, res) => {
 });
 
 /*Product Update*/
-Route.all('product/:id', async (req, res) => {
+Route.all('/product/:id', async (req, res) => {
        if (req.method == 'PUT' || req.method == 'PATCH') {
               const Product = await productModel.updateOne({
                      '_id': req.params.id

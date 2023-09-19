@@ -7,7 +7,7 @@ const OrderModel = require('../models/order.model');
 const OrderItemModel = require('../models/order.model');
 
 /*Now get all Order details*/
-Router.get('order', async (req, res) => {
+Router.get('/order', async (req, res) => {
        const OrderDetails = await OrderModel.find({}).populate('user').sort({'dateOrdered':-1});
        if (!OrderDetails) {
             return  res.status(400).json({ message: 'Orders not found', success: false })
@@ -17,7 +17,7 @@ Router.get('order', async (req, res) => {
 
 
 /* Geeting particular order by ID */
-Router.get('order/:id', async (req, res) => {
+Router.get('/order/:id', async (req, res) => {
        let Order= await OrderModel.findOne({ '_id': req.params.id })
                                   .populate('user','name')
                                   .populate({path:'orderItems',populate:{path:'product',populate:'category'}});
@@ -32,7 +32,7 @@ Router.get('order/:id', async (req, res) => {
 
 
 /*Geeting Statictic For Admin pannel*/
-Router.get('order/get/count', async (req, res) => {
+Router.get('/order/get/count', async (req, res) => {
        let OrderCount = await OrderModel.countDocuments().then((resp) => { return resp });
        if (!OrderCount) {
               return res.status(400).json({ success: false, message: 'count orders not found...!' })
@@ -41,7 +41,7 @@ Router.get('order/get/count', async (req, res) => {
 });
 
 /*Get Total Seles  */
-Router.get('order/get/totalSales',async(req,res)=>{
+Router.get('/order/get/totalSales',async(req,res)=>{
        const totalSales=await OrderModel.aggregate([
               {$group:{'_id':null,totalSale:{$sum:'$totalPrice'}}}
        ])
@@ -59,7 +59,7 @@ Router.get('order/get/totalSales',async(req,res)=>{
 
 
 /*Adding New Order */
-Router.post('order', async (req, res) => {
+Router.post('/order', async (req, res) => {
 
      /*Sample 
        {
@@ -130,7 +130,7 @@ Router.post('order', async (req, res) => {
 });
 
 /*Delete Order*/
-Router.delete('order/:id', (req, res) => {
+Router.delete('/order/:id', (req, res) => {
        // OrderModel.findOneAndDelete({ '_id': req.params.id })
        //        .then(info => {
        //               if (info) {
@@ -160,7 +160,7 @@ Router.delete('order/:id', (req, res) => {
 });
 
 /*Order Status Update*/
-Router.all('order/:id', async (req, res) => {
+Router.all('/order/:id', async (req, res) => {
        if (req.method == 'PUT' || req.method == 'PATCH') {
               const Order = await OrderModel.updateOne({
                      '_id': req.params.id
