@@ -6,7 +6,7 @@ const Route=express.Router();
 const categoryModel=require('../models/category.model');
 
 /*Get all Categories */
-Route.get('/', async (req,res)=>{
+Route.get('categories', async (req,res)=>{
        const Categories= await categoryModel.find({});
        if(!Categories){
          return  res.status(400).json({success:false,message:'Category Not Found...!'});     
@@ -16,7 +16,7 @@ Route.get('/', async (req,res)=>{
 
 
 /*Get particular  Category Depends On ID */
-Route.get('/:id', async (req,res)=>{
+Route.get('category/:id', async (req,res)=>{
        const Categories= await categoryModel.findOne({'_id':req.params.id});
        if(!Categories){
          return  res.status(400).json({success:false,message:'Category Not Found...!'});     
@@ -26,11 +26,13 @@ Route.get('/:id', async (req,res)=>{
 
 
 /*Add new category*/
-Route.post('/',async (req,res)=>{
-       const newCategory=new categoryModel({
-              name:req.body.name,
-              color:req.body.color
-       })
+Route.post('category',async (req,res)=>{
+       const newCategory = new categoryModel({
+              name: req.body.name,
+              icon: req.body.icon,
+              color: req.body.color
+              
+       }); 
        const Category= await newCategory.save();
        if(!Category){
        return  res.status(400).json({success:false,message:'Category Not created...!'});          
@@ -40,7 +42,7 @@ Route.post('/',async (req,res)=>{
 
 
 /*Delete particular  Category Depends On ID */
-Route.delete('/:id', (req, res) => {
+Route.delete('category/:id', (req, res) => {
        categoryModel.findOneAndDelete({ '_id': req.params.id })
               .then(info => {
                      if (info) {
@@ -56,14 +58,16 @@ Route.delete('/:id', (req, res) => {
 });
 
 /*Category Update*/
-Route.all('/:id', async (req, res) => {
+Route.all('category/:id', async (req, res) => {
        if (req.method == 'PUT' || req.method == 'PATCH') {
               const category = await categoryModel.updateOne({
                      '_id': req.params.id
               }, {
                      $set: {
                             'name': req.body.name,
+                            'icon':req.body.icon,
                             'color': req.body.color
+
                      }
               })
               // res.status(200).json(category);

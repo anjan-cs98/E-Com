@@ -7,7 +7,7 @@ const OrderModel = require('../models/order.model');
 const OrderItemModel = require('../models/order.model');
 
 /*Now get all Order details*/
-Router.get('/', async (req, res) => {
+Router.get('order', async (req, res) => {
        const OrderDetails = await OrderModel.find({}).populate('user').sort({'dateOrdered':-1});
        if (!OrderDetails) {
             return  res.status(400).json({ message: 'Orders not found', success: false })
@@ -17,7 +17,7 @@ Router.get('/', async (req, res) => {
 
 
 /* Geeting particular order by ID */
-Router.get('/:id', async (req, res) => {
+Router.get('order/:id', async (req, res) => {
        let Order= await OrderModel.findOne({ '_id': req.params.id })
                                   .populate('user','name')
                                   .populate({path:'orderItems',populate:{path:'product',populate:'category'}});
@@ -32,7 +32,7 @@ Router.get('/:id', async (req, res) => {
 
 
 /*Geeting Statictic For Admin pannel*/
-Router.get('/get/count', async (req, res) => {
+Router.get('order/get/count', async (req, res) => {
        let OrderCount = await OrderModel.countDocuments().then((resp) => { return resp });
        if (!OrderCount) {
               return res.status(400).json({ success: false, message: 'count orders not found...!' })
@@ -41,7 +41,7 @@ Router.get('/get/count', async (req, res) => {
 });
 
 /*Get Total Seles  */
-Router.get('/get/totalSales',async(req,res)=>{
+Router.get('order/get/totalSales',async(req,res)=>{
        const totalSales=await OrderModel.aggregate([
               {$group:{'_id':null,totalSale:{$sum:'$totalPrice'}}}
        ])
@@ -59,24 +59,29 @@ Router.get('/get/totalSales',async(req,res)=>{
 
 
 /*Adding New Order */
-Router.post('/', async (req, res) => {
+Router.post('order', async (req, res) => {
 
      /*Sample 
        {
               "orderItems":[
                    { 
                      "quantity":2,
-                     "product":"64b50b0035bd739f39b1e0e5"
+                     "product":"64ad054784aa38f9b8b7d3ff"
                    },
                   { 
                      "quantity":2,
-                     "product":"64af0501b1306bc9fa4dbd80"
+                     "product":"64ad09f377585eebb09f9569"
                    }
                    
                  ],
-                "shippingAddress":"Moura",
+                "shippingAddress1":"Moura",
+                "shippingAddress2":"Nayagram",
+                "city":"Midnapore",
+                "pincode":"721102",
+                "country":"India",
+                "phone":8016025019,
                 "status":"Pending",
-                "user":"64b4f30b5ae314b103a532e7"
+                "user":"65074c1966ee6f695c284587"
               
               }
    */
@@ -106,8 +111,13 @@ Router.post('/', async (req, res) => {
 
        const newOrder = new OrderModel({
               orderItems:OrderItemsIdsResolved,
-              shippingAddress:req.body.shippingAddress,
-              status:req.body.status,
+              shippingAddress1: req.body.shippingAddress1,
+              shippingAddress2: req.body.shippingAddress2,
+              city:req.body.city,
+              pincode:req.body.pincode,
+              country:req.body.country,
+              phone:req.body.phone,
+              status: req.body.status,
               totalPrice:totalPrice,
               user:req.body.user
        });
@@ -120,7 +130,7 @@ Router.post('/', async (req, res) => {
 });
 
 /*Delete Order*/
-Router.delete('/:id', (req, res) => {
+Router.delete('order/:id', (req, res) => {
        // OrderModel.findOneAndDelete({ '_id': req.params.id })
        //        .then(info => {
        //               if (info) {
@@ -150,7 +160,7 @@ Router.delete('/:id', (req, res) => {
 });
 
 /*Order Status Update*/
-Router.all('/:id', async (req, res) => {
+Router.all('order/:id', async (req, res) => {
        if (req.method == 'PUT' || req.method == 'PATCH') {
               const Order = await OrderModel.updateOne({
                      '_id': req.params.id

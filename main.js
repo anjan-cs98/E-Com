@@ -39,10 +39,13 @@ mongoose.connect(process.env.CONNECTION_STRING)
         });
 
 /*ALl END_PONTS */
-app.use(`${api}/category`,category);
-app.use(`${api}/product`,product);
-app.use(`${api}/users`,user);
-app.use(`${api}/order`,order);
+app.use(`${api}`,category);
+app.use(`${api}`,product);
+app.use(`${api}`,user);
+app.use(`${api}`,order);
+
+
+/* Implement Auth JWT */
 
 /*Create a Basic landing page :*/
 app.get('/',(req,res)=>{
