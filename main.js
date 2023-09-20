@@ -40,7 +40,7 @@ app.use('/public/uploads', express.static(__dirname + '/public/uploads/'));
 /*Moddleware*/
 app.use(morgan('tiny'));
 /* Implement Auth JWT */
-//app.use(JwtAuth());
+app.use(JwtAuth());
 
 
 /*Create a DataBase connection :*/
@@ -61,7 +61,7 @@ app.use(`${api}`,order);
 
 /* For Prevent any Error  */
 /* It define in the last of the applicaction after all api-end points  */
-//app.use(errorHandler);
+app.use(errorHandler);
 
 
 /*Create a Basic landing page :*/
