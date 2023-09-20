@@ -4,11 +4,11 @@ const express = require('express');
 const Router = express.Router();
 /*Consume Models*/
 const OrderModel = require('../models/order.model');
-const OrderItemModel = require('../models/order.model');
+const OrderItemModel = require('../models/order-item');
 
 /*Now get all Order details*/
 Router.get('/order', async (req, res) => {
-       const OrderDetails = await OrderModel.find({}).populate('user').sort({'dateOrdered':-1});
+       const OrderDetails = await OrderModel.find({}).populate('user','-passwordHash').sort({'dateOrdered':-1});
        if (!OrderDetails) {
             return  res.status(400).json({ message: 'Orders not found', success: false })
        }
@@ -58,6 +58,25 @@ Router.get('/order/get/totalSales',async(req,res)=>{
 });
 
 
+/* Particular user order Details  */
+Router.get('/order/get/userorders/:userid', async (req, res) => {
+       let UserOrder = await OrderModel.findOne({ 'user': req.params.userid })
+              .populate('user', 'name')
+              .populate({
+                     path: 'orderItems',
+                     populate: { path: 'product', populate: 'category' }
+              }).sort({ 'dateOrdered': -1 });
+      //console.log(Order);
+       if (UserOrder) {
+              return res.status(200).json(UserOrder);
+             
+       } else {
+              return res.status(200).json({ success: false, message: 'Order with the given user ID was not found...!' })  
+       }
+
+});
+
+
 /*Adding New Order */
 Router.post('/order', async (req, res) => {
 
@@ -85,15 +104,16 @@ Router.post('/order', async (req, res) => {
               
               }
    */
-       const OrderItemsIds= Promise.all(req.body.orderItems.map(async OrderItem=>{
-              let newOrderItem=new OrderItemModel({
-                     quantity:OrderItem.quantity,
-                     product:OrderItem.product
+       
+       const OrderItemsIds = Promise.all(req.body.orderItems.map(async OrderItem => {
+              let newOrderItem = new OrderItemModel({
+                     quantity: OrderItem.quantity,
+                     product: OrderItem.product
               })
-              newOrderItem=await newOrderItem.save();
+              newOrderItem = await newOrderItem.save();
               //console.log(newOrderItem);
               return newOrderItem._id;
-       }))
+       }));
       
       const OrderItemsIdsResolved=await OrderItemsIds
       //console.log(OrderItemsIdsResolved);
@@ -130,19 +150,8 @@ Router.post('/order', async (req, res) => {
 });
 
 /*Delete Order*/
-Router.delete('/order/:id', (req, res) => {
-       // OrderModel.findOneAndDelete({ '_id': req.params.id })
-       //        .then(info => {
-       //               if (info) {
-       //                      res.status(200).json({ success: true, message: 'Order was deleted..' })
-       //               } else {
-       //                      res.status(404).json({ success: false, message: 'Order was not deleted...!' })
-       //               }
-       //        })
-       //        .catch(err => {
-       //               res.status(404).json({ success: false, error: err });
-       //        })
-       OrderModel.findByIdAndRemove({ '_id': req.params.id }).then(async order => {
+Router.delete('/order/:id',async (req, res) => {
+      await OrderModel.findByIdAndRemove({ '_id': req.params.id }).then(async order => {
               // console.log(order);
               if (order) {
                      // Here we delete OrderItems from orderItem table :
@@ -162,16 +171,14 @@ Router.delete('/order/:id', (req, res) => {
 /*Order Status Update*/
 Router.all('/order/:id', async (req, res) => {
        if (req.method == 'PUT' || req.method == 'PATCH') {
-              const Order = await OrderModel.updateOne({
+              const Order = await OrderModel.findByIdAndUpdate({
                      '_id': req.params.id
               }, {
-                     $set: {
-                            'status': req.body.status
-                            
-                     }
-              })
+                     'status': req.body.status
+              }
+              );
               // res.status(200).json(category);
-              if (Order.modifiedCount && Order.matchedCount) {
+              if (Order) {
                      res.status(200).json({ success: true, message: `Order successfully updated.... ` });
 
               } else {

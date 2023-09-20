@@ -86,7 +86,6 @@ Router.get('/users/:id', async (req, res) => {
        } else {
               res.status(200).json(user);
        }
-
 });
 
 

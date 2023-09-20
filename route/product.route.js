@@ -76,8 +76,8 @@ Route.get('/products/get/featured/:count', async (req, res) => {
 
 
 /*Add new Products*/
-Route.post('/product/',upload.single('image'),async (req, res) => {
-       const category = await categoryModel.find({ '_id': req.body.category })
+Route.post('/product',upload.single('image'),async (req, res) => {
+       const category = await categoryModel.find({ '_id': req.body.category });
        //console.log(category);
        if (!category.length) { return res.status(400).json({ message: 'Invalid Category' }) }
        const file = req.file;
@@ -91,7 +91,6 @@ Route.post('/product/',upload.single('image'),async (req, res) => {
               richDescription: req.body.richDescription,
               brand:req.body.brand,
               image:`${base_Url}${fileName}`,
-              images:req.body.images,
               price:req.body.price,
               category:req.body.category,
               countInStock:req.body.countInStock,
@@ -119,7 +118,7 @@ Route.delete('/product/:id', async (req, res) => {
        //console.log(Product);
        Product.forEach(img => {
               let oldimagePath = img.image.slice(37);
-              //console.log(oldimagePath);
+              console.log(oldimagePath);
               // var String=oldimagePath.slice(37);
               fs.unlink('./public/uploads/' +oldimagePath, (err) => {
                      if (err) {
@@ -131,9 +130,9 @@ Route.delete('/product/:id', async (req, res) => {
        await productModel.findOneAndDelete({ '_id': req.params.id })
               .then(info => {
                      if (info) {
-                            res.status(200).json({ success: true, message: 'Product is deleted..' })
+                            res.status(200).json({ success: true, message: 'Product successfully  deleted..' })
                      } else {
-                            res.status(404).json({ success: false, message: 'Product is not deleted...!' })
+                            res.status(404).json({ success: false, message: 'Product was not deleted...!' })
                      }
               })
               .catch(err => {
@@ -160,7 +159,7 @@ Route.all('/product/gallery/:id',upload.array('images',5),async (req, res) => {
                      {
                             'images': imageURIs
                      }
-               )
+              );
               if (Product) {
                return res.status(200).json({success:true,message:'Image gallery updated successfully....!'});     
               }
@@ -191,7 +190,6 @@ Route.all('/product/:id',upload.single('image'),async (req, res) => {
                      'richDescription': req.body.richDescription,
                      'brand': req.body.brand,
                      'image': `${base_Url}${fileName}`,
-                     'images': req.body.images,
                      'price': req.body.price,
                      'category': req.body.category,
                      'countInStock': req.body.countInStock,

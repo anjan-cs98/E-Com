@@ -38,7 +38,7 @@ Route.post('/category',async (req,res)=>{
        return  res.status(400).json({success:false,message:'Category Not created...!'});          
        }
        res.status(200).json({success:true,message:'Category created successfully'})
-});
+    });
 
 
 /*Delete particular  Category Depends On ID */
@@ -60,18 +60,17 @@ Route.delete('/category/:id', (req, res) => {
 /*Category Update*/
 Route.all('/category/:id', async (req, res) => {
        if (req.method == 'PUT' || req.method == 'PATCH') {
-              const category = await categoryModel.updateOne({
+              const category = await categoryModel.findByIdAndUpdate({
                      '_id': req.params.id
               }, {
-                     $set: {
-                            'name': req.body.name,
-                            'icon':req.body.icon,
-                            'color': req.body.color
+       
+                     'name': req.body.name,
+                     'icon': req.body.icon,
+                     'color': req.body.color
 
-                     }
-              })
+              });
               // res.status(200).json(category);
-              if (category.modifiedCount && category.matchedCount) {
+              if (category) {
                      res.status(200).json({ success: true, message: `category successfully updated.... ` });
 
               } else {
