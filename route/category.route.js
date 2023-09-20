@@ -6,7 +6,7 @@ const Route=express.Router();
 const categoryModel=require('../models/category.model');
 
 /*Get all Categories */
-Route.get('categories', async (req,res)=>{
+Route.get('/categories', async (req,res)=>{
        const Categories= await categoryModel.find({});
        if(!Categories){
          return  res.status(400).json({success:false,message:'Category Not Found...!'});     
@@ -16,7 +16,7 @@ Route.get('categories', async (req,res)=>{
 
 
 /*Get particular  Category Depends On ID */
-Route.get('category/:id', async (req,res)=>{
+Route.get('/category/:id', async (req,res)=>{
        const Categories= await categoryModel.findOne({'_id':req.params.id});
        if(!Categories){
          return  res.status(400).json({success:false,message:'Category Not Found...!'});     
@@ -26,7 +26,7 @@ Route.get('category/:id', async (req,res)=>{
 
 
 /*Add new category*/
-Route.post('category',async (req,res)=>{
+Route.post('/category',async (req,res)=>{
        const newCategory = new categoryModel({
               name: req.body.name,
               icon: req.body.icon,
@@ -42,7 +42,7 @@ Route.post('category',async (req,res)=>{
 
 
 /*Delete particular  Category Depends On ID */
-Route.delete('category/:id', (req, res) => {
+Route.delete('/category/:id', (req, res) => {
        categoryModel.findOneAndDelete({ '_id': req.params.id })
               .then(info => {
                      if (info) {
@@ -58,7 +58,7 @@ Route.delete('category/:id', (req, res) => {
 });
 
 /*Category Update*/
-Route.all('category/:id', async (req, res) => {
+Route.all('/category/:id', async (req, res) => {
        if (req.method == 'PUT' || req.method == 'PATCH') {
               const category = await categoryModel.updateOne({
                      '_id': req.params.id
