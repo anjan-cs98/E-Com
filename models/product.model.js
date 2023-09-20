@@ -12,15 +12,17 @@ const productSchema=mongoose.Schema({
    richDescription:{
        type:String,
        default:''
+    },
+   brand: {
+        type: String,
+        required:true
    },
    image:{
        type:String,
        default:''
    },
-   images:{
-       type:Array,
-       default:[]
-   },
+   images:[
+   ],
    price:{
        type:Number,
        default:0

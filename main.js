@@ -1,15 +1,22 @@
-// Loading Express :
+/*Loading Express :*/
 const express=require('express');
-//Loading mongoose :
+/*Loading mongoose :*/
 const mongoose=require('mongoose');
 /*Loading morgan */
 const morgan = require('morgan');
-// Define a Port :
-const port=3000;
+/*Define a Port :*/
+const port = 3000;
+
+/* Load cors  */
+const cors = require('cors');
 
 /* Now env file load */
 require('dotenv/config')
-const api=process.env.API_URL;
+const api = process.env.API_URL;
+
+/* Load JWT auth */
+const JwtAuth = require('./helpers/jwt');
+const errorHandler = require('./helpers/error-handler');
 
 /*Consume All Route*/
 const category=require('./route/category.route');
@@ -18,15 +25,22 @@ const user=require('./route/user.route');
 const order=require('./route/order.route');
 
 //Create a instance of a express :
-const app=express();
+const app = express();
 
-/*Let express to accept incoming post data*/
+/* Let server cors free  */
+app.use(cors());
+app.options('*', cors());
+
+/*--Let express to accept incoming post data--*/
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+/* Make available server static resource */
+app.use('/public/uploads', express.static(__dirname + '/public/uploads/'));
 
 /*Moddleware*/
 app.use(morgan('tiny'));
-
+/* Implement Auth JWT */
+//app.use(JwtAuth());
 
 
 /*Create a DataBase connection :*/
@@ -39,10 +53,16 @@ mongoose.connect(process.env.CONNECTION_STRING)
         });
 
 /*ALl END_PONTS */
-app.use(`${api}/category`,category);
-app.use(`${api}/product`,product);
-app.use(`${api}/users`,user);
-app.use(`${api}/order`,order);
+app.use(`${api}`,category);
+app.use(`${api}`,product);
+app.use(`${api}`,user);
+app.use(`${api}`,order);
+
+
+/* For Prevent any Error  */
+/* It define in the last of the applicaction after all api-end points  */
+//app.use(errorHandler);
+
 
 /*Create a Basic landing page :*/
 app.get('/',(req,res)=>{

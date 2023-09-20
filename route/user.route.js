@@ -12,7 +12,7 @@ const jwt = require('jsonwebtoken');
 const userModel = require('../models/user.model');
 
 /*Now get all user details*/
-Router.get('/', async (req, res) => {
+Router.get('/users', async (req, res) => {
        const userDetails = await userModel.find({}).select('-passwordHash');
        if (!userDetails) {
               return res.status(400).json({ message: 'users not found', success: false })
@@ -21,7 +21,7 @@ Router.get('/', async (req, res) => {
 });
 
 /* Admin  registration */
-Router.post('/', async (req, res) => {
+Router.post('/users', async (req, res) => {
        const newUser = new userModel({
               name: req.body.name,
               email: req.body.email,
@@ -49,7 +49,7 @@ Router.post('/', async (req, res) => {
 });
 
 /*Geeting Statictic For Admin pannel*/
-Router.get('/get/count', async (req, res) => {
+Router.get('/users/get/count', async (req, res) => {
        let Users = await userModel.countDocuments().then((resp) => { return resp });
        if (!Users) {
               return res.status(400).json({ success: false, message: 'count user not found...!' })
@@ -59,7 +59,7 @@ Router.get('/get/count', async (req, res) => {
 
 
 /*Delete product*/
-Router.delete('/:id', async (req, res) => {
+Router.delete('/users/:id', async (req, res) => {
        if (!mongoose.isValidObjectId(req.params.id)) {
               return res.status(400).send('Users with the given ID not valid')
        }
@@ -78,7 +78,7 @@ Router.delete('/:id', async (req, res) => {
 });
 
 /* Geeting particular category by ID */
-Router.get('/:id', async (req, res) => {
+Router.get('/users/:id', async (req, res) => {
        let user = await userModel.findOne({ '_id': req.params.id }).select('-passwordHash');
        //console.log(user);
        if (!user) {
@@ -92,7 +92,7 @@ Router.get('/:id', async (req, res) => {
 
 
 /*Adding New Users */
-Router.post('/register', async (req, res) => {
+Router.post('/users/register', async (req, res) => {
        const newUser = new userModel({
               name: req.body.name,
               email: req.body.email,
@@ -121,7 +121,7 @@ Router.post('/register', async (req, res) => {
 });
 
 /* user Login*/
-Router.post('/login', async (req, res) => {
+Router.post('/users/login', async (req, res) => {
        // await Adventure.findOne({ country: 'Croatia' }).exec();  
        const user = await userModel.find({ 'email': req.body.email })
        //console.log(user);
