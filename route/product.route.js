@@ -116,24 +116,19 @@ Route.delete('/product/:id', async (req, res) => {
               return res.status(400).send('Product with the given ID not valid')
        }
        const Product = await productModel.find({ _id: req.params.id });
-       console.log(Product);
+       //console.log(Product);
        Product.forEach(img => {
               let oldimagePath = img.image.slice(37);
-              let oldImgesPath = img.images.slice(37);
-              console.log(oldimagePath);
+              //console.log(oldimagePath);
               // var String=oldimagePath.slice(37);
-             // cutString = oldimagePath;
-              fs.unlink('./public/uploads/' +oldimagePath && './public/uploads/' +oldImgesPath , (err) => {
+              fs.unlink('./public/uploads/' +oldimagePath, (err) => {
                      if (err) {
                       console.log(err)    
                      };
                      console.log('successfully deleted file');
                    });
-
-               }); 
-      console.log('.........................');
-       
-      await productModel.findOneAndDelete({ '_id': req.params.id })
+          }); 
+       await productModel.findOneAndDelete({ '_id': req.params.id })
               .then(info => {
                      if (info) {
                             res.status(200).json({ success: true, message: 'Product is deleted..' })
